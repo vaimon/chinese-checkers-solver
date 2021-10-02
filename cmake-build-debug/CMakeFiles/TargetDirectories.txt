@@ -1,3 +1,0 @@
-C:/Code/chinese-checkers/cmake-build-debug/CMakeFiles/rebuild_cache.dir
-C:/Code/chinese-checkers/cmake-build-debug/CMakeFiles/chinese_checkers.dir
-C:/Code/chinese-checkers/cmake-build-debug/CMakeFiles/edit_cache.dir
