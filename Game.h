@@ -8,11 +8,12 @@
 #define Field std::array<std::array<bool,9>,9>
 #include <array>
 #include <iostream>
+#include <vector>
 
 class Game {
-    Field finiteState {};
-    std::array<std::array<bool*,9>,3> horizontal {};
-    std::array<std::array<bool*,3>,9> vertical {};
+    static Field finiteState;
+    const static std::vector<std::vector<int>> possibleMoves;
+    static std::vector<std::pair<int,int>> fieldMap;
 public:
     Game();
 
@@ -20,7 +21,14 @@ public:
 
     void solve();
 
-    void printField(Field f);
+    static std::vector<std::pair<int,int>> enumerateField();
+
+    static void printField(Field f);
+
+    static std::vector<std::pair<int, int>> getAvailableMoves(Field f);
+
+    static std::vector<std::pair<int, int>> getBlankPositions(Field f);
+
 };
 
 
