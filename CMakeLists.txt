@@ -3,4 +3,4 @@ project(chinese_checkers)
 
 set(CMAKE_CXX_STANDARD 20)
 
-add_executable(chinese_checkers main.cpp)
+add_executable(chinese_checkers main.cpp Game.cpp Game.h)

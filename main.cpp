@@ -1,6 +1,9 @@
 #include <iostream>
+#include "Game.h"
 
 int main() {
-    std::cout << "Hello, World!" << std::endl;
+    setlocale(LC_ALL, "Russian");
+    Game g;
+    g.solve();
     return 0;
 }
