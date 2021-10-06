@@ -9,6 +9,7 @@
 #include <array>
 #include <iostream>
 #include <vector>
+#include <tuple>
 
 class Game {
     static Field finiteState;
@@ -17,18 +18,35 @@ class Game {
 public:
     Game();
 
+    /// Начально состояние поля перед игрой
     static Field getInitialField();
 
     void solve();
 
+    /// Ставит в соответствие кажой координате номер ячейки
     static std::vector<std::pair<int,int>> enumerateField();
 
     static void printField(Field f);
 
-    static std::vector<std::pair<int, int>> getAvailableMoves(Field f);
+    /// Все доступные на данный момент ходы ( <позиция откуда бьём> => <куда приходим> )
+    static std::vector<std::tuple<int, int, char>> getAvailableMoves(Field f);
 
-    static std::vector<std::pair<int, int>> getBlankPositions(Field f);
+    /// Все позиции, в которых нет шарика
+    static std::vector<int> getBlankPositions(Field f);
 
+    /// Получает номер позиции по её координатам
+    static int getPositionNumber(std::pair<int, int> coordinates){
+        for(int i = 0; i < fieldMap.size(); i ++){
+            if(fieldMap[i] == coordinates){
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    bool backtracking();
+
+    static Field getStateAfterMove(Field state, std::tuple<int, int, char> move);
 };
 
 
