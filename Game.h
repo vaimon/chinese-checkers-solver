@@ -12,6 +12,7 @@
 #include <tuple>
 #include <deque>
 #include <set>
+#include <queue>
 
 class Game {
     static Field finiteState;
@@ -33,7 +34,7 @@ public:
     static void printField(Field f);
 
     /// Все доступные на данный момент ходы ( <позиция откуда бьём> => <куда приходим> )
-    static std::vector<std::tuple<int, int, char>> getAvailableMoves(Field f);
+    static std::vector<std::pair<Field,std::tuple<int, int, char>>> getAvailableMoves(Field f);
 
     /// Все позиции, в которых нет шарика
     static std::vector<int> getBlankPositions(Field f);
@@ -48,6 +49,16 @@ public:
     static bool isFinish(Field f);
 
     static long long hashField(Field f);
+
+    static int h(Field f);
+};
+
+struct less_than_key
+{
+    inline bool operator() (const std::pair<Field,std::tuple<int, int, char>>& f1, const std::pair<Field,std::tuple<int, int, char>>& f2)
+    {
+        return (Game::h(f1.first) > Game::h(f2.first));
+    }
 };
 
 
