@@ -10,11 +10,13 @@
 #include <iostream>
 #include <vector>
 #include <tuple>
+#include <deque>
 
 class Game {
     static Field finiteState;
     const static std::vector<std::vector<int>> possibleMoves;
     static std::vector<std::pair<int,int>> fieldMap;
+    std::deque<std::pair<Field,std::tuple<int, int, char>>> moveHistory {};
 public:
     Game();
 
@@ -47,6 +49,8 @@ public:
     bool backtracking();
 
     static Field getStateAfterMove(Field state, std::tuple<int, int, char> move);
+
+    static bool isFinish(Field f);
 };
 
 

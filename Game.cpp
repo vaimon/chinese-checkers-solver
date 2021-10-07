@@ -77,10 +77,14 @@ Field Game::getInitialField() {
 void Game::solve() {
     Field f = getInitialField();
     printField(f);
-    auto ff = getStateAfterMove(f, {20,22,'r'});
-    printField(ff);
-    ff = getStateAfterMove(ff, {36,21,'u'});
-    printField(ff);
+    moveHistory.push_back({f,{0,0,'e'}});
+    if(!backtracking()){
+        std::cout << "Something went wrong" << std::endl;
+        return;
+    }
+    for(auto state:moveHistory){
+        std::cout << std::get<0>(state.second) << " => " << std::get<1>(state.second) << std::endl;
+    }
 }
 
 void Game::printField(Field f) {
@@ -114,8 +118,6 @@ std::vector<std::tuple<int, int, char>> Game::getAvailableMoves(Field f) {
                 res.emplace_back(movePosition, blankPosition, 'd');
             } else if ((movePosition > blankPosition) && f[i + 1][j] && f[i + 2][j]) {               // up
                 res.emplace_back(movePosition, blankPosition, 'u');
-            } else {
-                throw std::exception();
             }
         }
     }
@@ -155,7 +157,23 @@ std::vector<std::pair<int, int>> Game::enumerateField() {
 }
 
 bool Game::backtracking() {
-
+    Field state = moveHistory.back().first;
+    if(isFinish(state)){
+        return true;
+    }
+    auto moves = getAvailableMoves(state);
+    if(moves.empty()){
+        return false;
+    }
+    for(auto move: moves){
+        moveHistory.push_back({getStateAfterMove(state,move),move});
+        if(!backtracking()){
+            moveHistory.pop_back();
+        }else{
+            return true;
+        }
+    }
+    return false;
 }
 
 Field Game::getStateAfterMove(Field state, std::tuple<int, int, char> move) {
@@ -179,4 +197,15 @@ Field Game::getStateAfterMove(Field state, std::tuple<int, int, char> move) {
     }
     newState[toI][toJ] = true;
     return newState;
+}
+
+bool Game::isFinish(std::array<std::array<bool, 9>, 9> f) {
+    for (int i = 0; i < 9; ++i) {
+        for (int j = 0; j < 9; ++j) {
+            if(f[i][j] != finiteState[i][j]){
+                return false;
+            }
+        }
+    }
+    return true;
 }
