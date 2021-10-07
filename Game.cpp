@@ -73,7 +73,7 @@ Field Game::getInitialField() {
     res[4][4] = false;
     return res;
 }
-
+/*
 void Game::solve() {
     Field f = getInitialField();
     moveHistory.push_back({f,{0,0,'e'}});
@@ -87,6 +87,65 @@ void Game::solve() {
     for(auto state:moveHistory){
         std::cout << std::get<0>(state.second) << " => " << std::get<1>(state.second) << std::endl;
     }
+}
+*/
+int Game::h(Field f) {
+    int res = 0;
+    // corners
+    //res += f[0][3] + f[0][5] + f[3][0] + f[5][0] + f[3][8] + f[5][8] + f[8][3]  + f[8][5];
+    // Merson regions
+    //res += (f[1][3] && f[2][3]) + (f[3][1] && f[3][2]) + (f[5][1] && f[5][2]) + (f[6][3] && f[7][3]) + (f[6][5] && f[7][5]) + (f[5][6] && f[5][7]) + (f[3][6] && f[3][7]) + (f[1][5] && f[2][5]) + (f[3][3] && f[3][4] && f[4][3] && f[4][4]);
+    return getAvailableMoves(f).size();
+}
+
+void Game::solve() {
+    //std::deque<std::array<ushort, 16>> movesHistory{};
+    Field f = getInitialField();
+    moveHistory.push_back({f,{0,0,'e'}});
+    int bound = h(f);
+    while (true) {
+        int t = ida_star(bound);
+        if (t == -1) {
+            std::cout << "Number of moves: " << moveHistory.size() - 1 << std::endl;
+            return;
+        } else if (t == INT32_MAX) {
+            std::cout << "Well, congratulations, everything is screwed up." << std::endl;
+            return;
+        }
+        bound = t;
+    }
+}
+
+int Game::ida_star(int bound) {
+    Field node = moveHistory.back().first;
+    int g = moveHistory.size();
+    int f = g + h(node);
+    if (f > bound) {
+        return f;
+    }
+    if (isFinish(node)) {
+        return -1;
+    }
+    int min = INT32_MAX;
+    for (auto move: getAvailableMoves(node)) {
+        Field sNode = getStateAfterMove(node,move);
+        long long hash = hashField(sNode);
+        if (failedStates.find(hash) == failedStates.end() || g <= failedStates[hash]) {
+            failedStates[hash] = g;
+        } else {
+            continue;
+        }
+        moveHistory.emplace_back(sNode,move);
+        int t = ida_star(bound);
+        if (t == -1) {
+            return -1;
+        }
+        if (t < min) {
+            min = t;
+        }
+        moveHistory.pop_back();
+    }
+    return min;
 }
 
 void Game::printField(Field f) {
@@ -173,6 +232,7 @@ std::vector<std::pair<int, int>> Game::enumerateField() {
     return res;
 }
 
+/*
 bool Game::backtracking(int counter) {
 //    std::cout << counter << std::endl;
     Field state = moveHistory.back().first;
@@ -200,7 +260,7 @@ bool Game::backtracking(int counter) {
     }
     return false;
 }
-
+*/
 Field Game::getStateAfterMove(Field state, std::tuple<int, int, char> move) {
 
     int from, to, fromI, fromJ, toI, toJ;

@@ -12,13 +12,14 @@
 #include <tuple>
 #include <deque>
 #include <set>
+#include <map>
 
 class Game {
     static Field finiteState;
     const static std::vector<std::vector<int>> possibleMoves;
     static std::vector<std::pair<int,int>> fieldMap;
     std::deque<std::pair<Field,std::tuple<int, int, char>>> moveHistory {};
-    std::set<long long> failedStates{};
+    std::map<long long,int> failedStates{};
 public:
     Game();
 
@@ -48,6 +49,10 @@ public:
     static bool isFinish(Field f);
 
     static long long hashField(Field f);
+
+    static int h(Field f);
+
+    int ida_star(int bound);
 };
 
 
