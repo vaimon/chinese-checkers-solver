@@ -76,12 +76,14 @@ Field Game::getInitialField() {
 
 void Game::solve() {
     Field f = getInitialField();
-    printField(f);
     moveHistory.push_back({f,{0,0,'e'}});
-    if(!backtracking()){
+    f[4][3] = false;
+    printField(f);
+    if(!backtracking(1)){
         std::cout << "Something went wrong" << std::endl;
         return;
     }
+    printField(f);
     for(auto state:moveHistory){
         std::cout << std::get<0>(state.second) << " => " << std::get<1>(state.second) << std::endl;
     }
@@ -110,14 +112,29 @@ std::vector<std::tuple<int, int, char>> Game::getAvailableMoves(Field f) {
     for (int blankPosition: getBlankPositions(f)) {
         int i = fieldMap[blankPosition].first, j = fieldMap[blankPosition].second;
         for (int movePosition: possibleMoves[blankPosition]) {
-            if ((movePosition == blankPosition - 2) && f[i][j - 1] && f[i][j - 2]) {                 // right
-                res.emplace_back(movePosition, blankPosition, 'r');
-            } else if ((movePosition == blankPosition + 2) && f[i][j + 1] && f[i][j + 2]) {          // left
-                res.emplace_back(movePosition, blankPosition, 'l');
-            } else if ((movePosition < blankPosition) && f[i - 1][j] && f[i - 2][j]) {               // down
-                res.emplace_back(movePosition, blankPosition, 'd');
-            } else if ((movePosition > blankPosition) && f[i + 1][j] && f[i + 2][j]) {               // up
-                res.emplace_back(movePosition, blankPosition, 'u');
+            if (movePosition == blankPosition - 2) {
+                if(f[i][j - 1] && f[i][j - 2]) {
+                    res.emplace_back(movePosition, blankPosition, 'r');
+                }
+                continue;
+            }
+            if (movePosition == blankPosition + 2) {
+                if(f[i][j + 1] && f[i][j + 2]) {
+                    res.emplace_back(movePosition, blankPosition, 'l');
+                }
+                continue;
+            }
+            if (movePosition < blankPosition ) {
+                if(f[i - 1][j] && f[i - 2][j]){
+                    res.emplace_back(movePosition, blankPosition, 'd');
+                }
+                continue;
+            }
+            if (movePosition > blankPosition) {
+                if(f[i + 1][j] && f[i + 2][j]){
+                    res.emplace_back(movePosition, blankPosition, 'u');
+                }
+                continue;
             }
         }
     }
@@ -156,7 +173,8 @@ std::vector<std::pair<int, int>> Game::enumerateField() {
     return res;
 }
 
-bool Game::backtracking() {
+bool Game::backtracking(int counter) {
+//    std::cout << counter << std::endl;
     Field state = moveHistory.back().first;
     if(isFinish(state)){
         return true;
@@ -166,8 +184,15 @@ bool Game::backtracking() {
         return false;
     }
     for(auto move: moves){
-        moveHistory.push_back({getStateAfterMove(state,move),move});
-        if(!backtracking()){
+        auto newstate = getStateAfterMove(state,move);
+        long long hash = hashField(newstate);
+        if(failedStates.find(hash) != failedStates.end()){
+//            std::cout << "collision" << std::endl;
+            return false;
+        }
+        moveHistory.emplace_back(newstate,move);
+        if(!backtracking(counter + 1)){
+            failedStates.insert(hashField(moveHistory.back().first));
             moveHistory.pop_back();
         }else{
             return true;
@@ -208,4 +233,28 @@ bool Game::isFinish(std::array<std::array<bool, 9>, 9> f) {
         }
     }
     return true;
+}
+
+int Game::getPositionNumber(std::pair<int, int> coordinates) {
+    for(int i = 0; i < fieldMap.size(); i ++){
+        if(fieldMap[i] == coordinates){
+            return i;
+        }
+    }
+    return -1;
+}
+
+long long Game::hashField(std::array<std::array<bool, 9>, 9> f) {
+    long long res = 0;
+    int shift = 0;
+    for (int i = 0; i < 9; ++i) {
+        for (int j = 0; j < 9; ++j) {
+            if (!(i > 2 && i < 6) && (j < 3 || j > 5)) {
+                continue;
+            }
+            res += (f[i][j]?1LL:0LL) << shift;
+            shift++;
+        }
+    }
+    return res;
 }
