@@ -76,7 +76,6 @@ Field Game::getInitialField() {
 void Game::solve() {
     Field f = getInitialField();
     moveHistory.push_back({f,{0,0,'e'}});
-    f[4][3] = false;
     printField(f);
     if(!backtracking(1)){
         std::cout << "Something went wrong" << std::endl;
@@ -188,6 +187,7 @@ bool Game::backtracking(int counter) {
         return true;
     }
     auto moves = getAvailableMoves(state);
+    std::sort(moves.begin(),moves.end(),less_than_key());
     if(moves.empty()){
         return false;
     }
