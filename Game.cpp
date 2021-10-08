@@ -200,7 +200,10 @@ bool Game::backtracking(int counter) {
     }
     auto moves = getAvailableMoves(state);
     std::sort(moves.begin(), moves.end(), less_than_key());
-    if (moves.empty() || computePagoda(state) < finitePagoda) {
+    // У нас нет ходов, или у нас конфликт с функцией пагоды, или у нас не осталось фишек класса центральной
+    if (moves.empty() || computePagoda(state) < finitePagoda ||
+        !(state[0][4] || state[2][4] || state[4][4] || state[6][4] || state[8][4] || state[4][0] || state[4][2] ||
+          state[4][6] || state[4][8])) {
         return false;
     }
     for (auto move: moves) {
@@ -279,15 +282,15 @@ long long Game::hashField(std::array<std::array<bool, 9>, 9> f) {
 }
 
 int Game::h(Field f) {
-//    int res = 0;
-//    // corners
-//    res += f[0][3] + f[0][5] + f[3][0] + f[5][0] + f[3][8] + f[5][8] + f[8][3] + f[8][5];
-//    // Merson regions
-//    res += (f[1][3] && f[2][3]) + (f[3][1] && f[3][2]) + (f[5][1] && f[5][2]) + (f[6][3] && f[7][3]) +
-//           (f[6][5] && f[7][5]) + (f[5][6] && f[5][7]) + (f[3][6] && f[3][7]) + (f[1][5] && f[2][5]) +
-//           (f[3][3] && f[3][4] && f[4][3] && f[4][4]);
+    int res = 0;
+    // corners
+    res += f[0][3] + f[0][5] + f[3][0] + f[5][0] + f[3][8] + f[5][8] + f[8][3] + f[8][5];
+    // Merson regions
+    res += (f[1][3] && f[2][3]) + (f[3][1] && f[3][2]) + (f[5][1] && f[5][2]) + (f[6][3] && f[7][3]) +
+           (f[6][5] && f[7][5]) + (f[5][6] && f[5][7]) + (f[3][6] && f[3][7]) + (f[1][5] && f[2][5]) +
+           (f[3][3] && f[3][4] && f[4][3] && f[4][4]);
 
-    return computePagoda(f);
+    return res;
 }
 
 int Game::computePagoda(std::array<std::array<bool, 9>, 9> f) {

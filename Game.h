@@ -61,7 +61,7 @@ struct less_than_key
 {
     inline bool operator() (const std::pair<Field,std::tuple<int, int, char>>& f1, const std::pair<Field,std::tuple<int, int, char>>& f2)
     {
-        return (Game::h(f1.first) < Game::h(f2.first));
+        return (Game::h(f1.first) > Game::h(f2.first));
     }
 };
 
