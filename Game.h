@@ -20,6 +20,8 @@ class Game {
     static std::vector<std::pair<int,int>> fieldMap;
     std::deque<std::pair<Field,std::tuple<int, int, char>>> moveHistory {};
     std::set<long long> failedStates{};
+    static std::vector<std::vector<int>> pagodaCoeffs;
+    static int finitePagoda;
 public:
     Game();
 
@@ -51,13 +53,15 @@ public:
     static long long hashField(Field f);
 
     static int h(Field f);
+
+    static int computePagoda(Field f);
 };
 
 struct less_than_key
 {
     inline bool operator() (const std::pair<Field,std::tuple<int, int, char>>& f1, const std::pair<Field,std::tuple<int, int, char>>& f2)
     {
-        return (Game::h(f1.first) > Game::h(f2.first));
+        return (Game::h(f1.first) < Game::h(f2.first));
     }
 };
 
