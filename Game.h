@@ -5,7 +5,7 @@
 #ifndef CHINESE_CHECKERS_GAME_H
 #define CHINESE_CHECKERS_GAME_H
 
-#define Field std::array<std::array<bool,9>,9>
+#define Field std::array<std::array<bool,7>,7>
 #include <array>
 #include <iostream>
 #include <vector>
@@ -55,6 +55,8 @@ public:
     static int h(Field f);
 
     static int computePagoda(Field f);
+
+    void printNumeratedField();
 };
 
 struct less_than_key
