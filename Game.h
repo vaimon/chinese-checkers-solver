@@ -5,13 +5,14 @@
 #ifndef CHINESE_CHECKERS_GAME_H
 #define CHINESE_CHECKERS_GAME_H
 
-#define Field std::array<std::array<bool,9>,9>
+#define Field std::array<std::array<bool,7>,7>
 #include <array>
 #include <iostream>
 #include <vector>
 #include <tuple>
 #include <deque>
 #include <set>
+#include <queue>
 
 class Game {
     static Field finiteState;
@@ -19,6 +20,8 @@ class Game {
     static std::vector<std::pair<int,int>> fieldMap;
     std::deque<std::pair<Field,std::tuple<int, int, char>>> moveHistory {};
     std::set<long long> failedStates{};
+    static std::vector<std::vector<int>> pagodaCoeffs;
+    static int finitePagoda;
 public:
     Game();
 
@@ -33,7 +36,7 @@ public:
     static void printField(Field f);
 
     /// Все доступные на данный момент ходы ( <позиция откуда бьём> => <куда приходим> )
-    static std::vector<std::tuple<int, int, char>> getAvailableMoves(Field f);
+    static std::vector<std::pair<Field,std::tuple<int, int, char>>> getAvailableMoves(Field f);
 
     /// Все позиции, в которых нет шарика
     static std::vector<int> getBlankPositions(Field f);
@@ -48,6 +51,20 @@ public:
     static bool isFinish(Field f);
 
     static long long hashField(Field f);
+
+    static int h(Field f);
+
+    static int computePagoda(Field f);
+
+    void printNumeratedField();
+};
+
+struct less_than_key
+{
+    inline bool operator() (const std::pair<Field,std::tuple<int, int, char>>& f1, const std::pair<Field,std::tuple<int, int, char>>& f2)
+    {
+        return (Game::h(f1.first) > Game::h(f2.first));
+    }
 };
 
 
